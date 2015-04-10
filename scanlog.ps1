@@ -12,13 +12,13 @@
 # This script scans the log for lines matching <regex> in the field number <nfield> only  
 # and reports the number of matching lines with timestamps within the last <nminutes>.
 #
-# Exit code: 0 if no line matches, 1 if one or more lines match,
-#            2 if the script was called with the wrong number of args
+# Exit code: 0 if no line matches, 2 if one or more lines match,
+#            3 if the script was called with the wrong number of args
 
 
 if ($args.Count -ne 4) {
     Write-Output "Usage: .\scanlog.ps1 <logfilename> <regex> <nfield> <nminutes>"
-    exit 2
+    exit 3
 }
 
 # Format of timestamp (field 0)
@@ -63,7 +63,7 @@ if ($matchinglines -eq 0) {
     $exitcode = 0
 }
 else { 
-    $exitcode = 1
+    $exitcode = 2
 }
 Write-Output $output
 exit $exitcode
