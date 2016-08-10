@@ -87,7 +87,7 @@ def display_info(result_type, exectime):
 	return "SOAP "+str(result_type)+" - exec time "+str(exectime)+"[s]"
 
 def display_graph(exectime, args, ok):
-	return "time="+str(exectime)+"sec;"+str(args.warning)+";"+str(args.critical)+"; ok="+str(ok)
+	return "time="+str(exectime)+"s;"+str(args.warning)+";"+str(args.critical)+"; ok="+str(ok)
 #-------------------------------------------------------------------------------
 
 # MAIN -------------------------------------------------------------------------
