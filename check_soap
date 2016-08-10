@@ -20,6 +20,9 @@
 #########################################################################################
 import requests, argparse, time, sys
 
+start_time = float()
+end_time = float()
+
 # Args management --------------------------------------------------------------
 def handle_args():
 	parser = argparse.ArgumentParser(description='[~] check_soap Centreon plugin')
@@ -37,18 +40,27 @@ def handle_args():
 
 # HTTP query -------------------------------------------------------------------
 def post_query(args):
+	global end_time
 	try:
 		url=args.url
 		headers = {'content-type': 'text/xml'}
 		body = args.data
 		if hasattr(args, 'srv-cert') and hasattr(args, 'client-cert') and hasattr(args, 'client-cert-key'):
+			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers, cert=(args.client-cert, args.client-cert-key), verify=args.srv-cert)
+			end_time = (time.time() - start_time)
 		elif hasattr(args, 'client-cert') and hasattr(args, 'client-cert-key'):
+			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers, cert=(args.client-cert, args.client-cert-key))
+			end_time = (time.time() - start_time)
 		elif hasattr(args, 'srv-cert'):
+			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers, verify=args.srv-cert)
+			end_time = (time.time() - start_time)
 		else:
+			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers)
+			end_time = (time.time() - start_time)
 		return response
 	except:
 		print ("SOAP error - bad service url or query|"+display_graph(0, args, 0))
@@ -75,13 +87,11 @@ def display_info(result_type, exectime):
 	return "SOAP "+str(result_type)+" - exec time "+str(exectime)+"[s]"
 
 def display_graph(exectime, args, ok):
-	return "time="+str(exectime)+"s;"+str(args.warning)+";"+str(args.critical)+"; ok="+str(ok)
+	return "time="+str(exectime)+"sec;"+str(args.warning)+";"+str(args.critical)+"; ok="+str(ok)
 #-------------------------------------------------------------------------------
 
 # MAIN -------------------------------------------------------------------------
 args = handle_args()
-start_time = time.time()
 rep = post_query(args)
-query_time = time.time() - start_time
-check_result(args, rep, query_time)
+check_result(args, rep, end_time)
 # ------------------------------------------------------------------------------
