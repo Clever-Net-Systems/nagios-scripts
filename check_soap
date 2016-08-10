@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding: utf-8
-################################################################################
-#   Clever Net Systems [~]                                                     #
-#   Clément Hampaï <clement.hampai@clevernetsystems.com>                       #
+#################################################################################
+#   Clever Net Systems [~]                                                      #
+#   Clément Hampaï <clement.hampai@clevernetsystems.com>                        #
 #   Centreon check_soap plugin					                #
 #									        #
 #	This program is free software: you can redistribute it and/or modify	#
@@ -17,7 +17,7 @@
 # 										#
 #	   You should have received a copy of the GNU General Public License 	#
 #	   along with this program.  If not, see <http://www.gnu.org/licenses/>.#
-################################################################################
+#################################################################################
 import requests, argparse, time, sys
 
 # Args management --------------------------------------------------------------
