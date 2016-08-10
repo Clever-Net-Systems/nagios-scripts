@@ -12,7 +12,8 @@ Centreon plugin checking soap web services availability
 ### CentOS install
 ```
 yum install python-pip
-pip install requests argparse time sys
+pip install --upgrade pip
+pip install requests argparse
 ```
 
 ### Command
