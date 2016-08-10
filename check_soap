@@ -1,0 +1,64 @@
+#!/usr/bin/python
+# coding: utf-8
+################################################################################
+#   Clever Net Systems [~]                                                     #
+#   Clément Hampaï <clement.hampai@clevernetsystems.com>                       #
+#   Centreon check_soap plugin                                                 #
+################################################################################
+import requests, argparse, time, sys
+
+# Args management --------------------------------------------------------------
+def handle_args():
+	parser = argparse.ArgumentParser(description='[~] check_soap Centreon plugin')
+	parser.add_argument('--url', help='url of the soap service',required=True)
+	parser.add_argument('--data', help='xml data to post to the soap service',required=True)
+	parser.add_argument('--success', help='string to match in the service answer for a valide query',required=True)
+	parser.add_argument('--warning', help='exec time in [ms] for warning tresholds',required=True)
+	parser.add_argument('--critical', help='exec time in [ms] for critical tresholds',required=True)
+	args = parser.parse_args()
+	return args
+#-------------------------------------------------------------------------------
+
+# HTTP query -------------------------------------------------------------------
+def post_query(args):
+	try:
+		url=args.url
+		headers = {'content-type': 'text/xml'}
+		body = args.data
+		response = requests.post(url,data=body,headers=headers)
+		return response
+	except:
+		print "SOAP error - bad service url or query|"+display_graph(0, args, 0)
+		sys.exit(3)
+#-------------------------------------------------------------------------------
+
+# Arrange http query result ----------------------------------------------------
+def check_result(args, response, time):
+	exectime = round(time,3)
+	if args.success in response.text and response.status_code == 200 and float(time) < float(args.warning) and float(time) < float(args.critical):
+		print display_info("OK", exectime)+"|"+display_graph(exectime, args, 1)
+		sys.exit(0)
+	elif args.success in response.text and response.status_code == 200 and float(time) > float(args.critical):
+		print display_info("critical", exectime)+"|"+display_graph(exectime, args, 0)
+		sys.exit(2)
+	elif args.success in response.text and response.status_code == 200 and float(time) > float(args.warning):
+		print display_info("warning", exectime)+"|"+display_graph(exectime, args, 0)
+		sys.exit(1)
+	else:
+		print "SOAP critical - bad service answer|"+display_graph(exectime, args, 0)
+		sys.exit(2)
+
+def display_info(result_type, exectime):
+	return "SOAP "+str(result_type)+" - exec time "+str(exectime)+"[s]"
+
+def display_graph(exectime, args, ok):
+	return "time="+str(exectime)+"s;"+str(args.warning)+";"+str(args.critical)+"; ok="+str(ok)
+#-------------------------------------------------------------------------------
+
+# MAIN -------------------------------------------------------------------------
+args = handle_args()
+start_time = time.time()
+rep = post_query(args)
+query_time = time.time() - start_time
+check_result(args, rep, query_time)
+# ------------------------------------------------------------------------------
