@@ -45,17 +45,17 @@ def post_query(args):
 		url=args.url
 		headers = {'content-type': 'text/xml'}
 		body = args.data
-		if hasattr(args, 'srv-cert') and hasattr(args, 'client-cert') and hasattr(args, 'client-cert-key'):
+		if args.srv_cert != None and args.client_cert != None and args.client_cert_key != None:
 			start_time = time.time()
-			response = requests.post(url,data=body,headers=headers, cert=(args.client-cert, args.client-cert-key), verify=args.srv-cert)
+			response = requests.post(url,data=body,headers=headers, cert=(args.client_cert, args.client_cert_key), verify=args.srv_cert)
 			end_time = (time.time() - start_time)
-		elif hasattr(args, 'client-cert') and hasattr(args, 'client-cert-key'):
+		elif args.client_cert != None and args.client_cert_key != None:
 			start_time = time.time()
-			response = requests.post(url,data=body,headers=headers, cert=(args.client-cert, args.client-cert-key))
+			response = requests.post(url,data=body,headers=headers, cert=(args.client_cert, args.client_cert_key),  verify=False)
 			end_time = (time.time() - start_time)
-		elif hasattr(args, 'srv-cert'):
+		elif args.srv_cert != None:
 			start_time = time.time()
-			response = requests.post(url,data=body,headers=headers, verify=args.srv-cert)
+			response = requests.post(url,data=body,headers=headers, verify=args.srv_cert)
 			end_time = (time.time() - start_time)
 		else:
 			start_time = time.time()
@@ -80,7 +80,7 @@ def check_result(args, response, time):
 		print (display_info("warning", exectime)+"|"+display_graph(exectime, args, 0))
 		sys.exit(1)
 	else:
-		print ("SOAP critical - bad service answer|"+display_graph(exectime, args, 0))
+		print ("SOAP critical - bad service answer - http "+str(response.status_code)+"|"+display_graph(exectime, args, 0))
 		sys.exit(2)
 
 def display_info(result_type, exectime):
