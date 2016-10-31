@@ -19,6 +19,7 @@
 #	    along with this program.  If not, see <http://www.gnu.org/licenses/>.  	#
 #########################################################################################
 import requests, argparse, time, sys
+from requests.auth import HTTPBasicAuth
 
 start_time = float()
 end_time = float()
@@ -28,10 +29,12 @@ def handle_args():
 	parser = argparse.ArgumentParser(description='[~] check_soap Centreon plugin')
 	parser.add_argument('--url', help='url of the soap service',required=True)
 	parser.add_argument('--data', help='xml data to post to the soap service',required=True)
-	parser.add_argument('--success', help='string to match in the service answer for a valide query',required=True)
+	parser.add_argument('--success', help='string to match in the service answer for a valide query',required=False)
 	parser.add_argument('--srv-cert', help='path to a CA_BUNDLE file or directory with certificates of trusted CAs',required=False)
 	parser.add_argument('--client-cert', help='local cert for client side certificate',required=False)
 	parser.add_argument('--client-cert-key', help='specify a local cert key for client side certificate',required=False)
+	parser.add_argument('--basic-auth-user', help='specify a basic authentication user',required=False)
+	parser.add_argument('--basic-auth-password', help='specify a basic authentication password',required=False)
 	parser.add_argument('--warning', help='exec time in [ms] for warning tresholds',required=True)
 	parser.add_argument('--critical', help='exec time in [ms] for critical tresholds',required=True)
 	args = parser.parse_args()
@@ -45,17 +48,33 @@ def post_query(args):
 		url=args.url
 		headers = {'content-type': 'text/xml'}
 		body = args.data
-		if args.srv_cert != None and args.client_cert != None and args.client_cert_key != None:
+		if args.srv_cert != None and args.client_cert != None and args.client_cert_key != None and args.basic_auth_user != None and args.basic_auth_password != None:
+			start_time = time.time()
+			response = requests.post(url,data=body,headers=headers, cert=(args.client_cert, args.client_cert_key), verify=args.srv_cert, auth=HTTPBasicAuth(args.basic_auth_user, args.basic_auth_password))
+			end_time = (time.time() - start_time)
+		elif args.srv_cert != None and args.client_cert != None and args.client_cert_key != None:
 			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers, cert=(args.client_cert, args.client_cert_key), verify=args.srv_cert)
+			end_time = (time.time() - start_time)
+		elif args.client_cert != None and args.client_cert_key != None and args.basic_auth_user != None and args.basic_auth_password != None:
+			start_time = time.time()
+			response = requests.post(url,data=body,headers=headers, cert=(args.client_cert, args.client_cert_key),  verify=False, auth=HTTPBasicAuth(args.basic_auth_user, args.basic_auth_password))
 			end_time = (time.time() - start_time)
 		elif args.client_cert != None and args.client_cert_key != None:
 			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers, cert=(args.client_cert, args.client_cert_key),  verify=False)
 			end_time = (time.time() - start_time)
+		elif args.srv_cert != None and args.basic_auth_user != None and args.basic_auth_password != None:
+			start_time = time.time()
+			response = requests.post(url,data=body,headers=headers, verify=args.srv_cert, auth=HTTPBasicAuth(args.basic_auth_user, args.basic_auth_password))
+			end_time = (time.time() - start_time)
 		elif args.srv_cert != None:
 			start_time = time.time()
 			response = requests.post(url,data=body,headers=headers, verify=args.srv_cert)
+			end_time = (time.time() - start_time)
+		elif args.basic_auth_user != None and args.basic_auth_password != None:
+			start_time = time.time()
+			response = requests.post(url,data=body,headers=headers, auth=HTTPBasicAuth(args.basic_auth_user, args.basic_auth_password))
 			end_time = (time.time() - start_time)
 		else:
 			start_time = time.time()
@@ -70,13 +89,13 @@ def post_query(args):
 # Arrange http query result ----------------------------------------------------
 def check_result(args, response, time):
 	exectime = round(time,3)
-	if args.success in response.text and response.status_code == 200 and float(time) < float(args.warning) and float(time) < float(args.critical):
+	if (args.success in response.text or args.success == None or args.success == "") and response.status_code == 200 and float(time) < float(args.warning) and float(time) < float(args.critical):
 		print (display_info("OK", exectime)+"|"+display_graph(exectime, args, 1))
 		sys.exit(0)
-	elif args.success in response.text and response.status_code == 200 and float(time) > float(args.critical):
+	elif (args.success in response.text or args.success == None or args.success == "") and response.status_code == 200 and float(time) > float(args.critical):
 		print (display_info("critical", exectime)+"|"+display_graph(exectime, args, 0))
 		sys.exit(2)
-	elif args.success in response.text and response.status_code == 200 and float(time) > float(args.warning):
+	elif (args.success in response.text or args.success == None or args.success == "") and response.status_code == 200 and float(time) > float(args.warning):
 		print (display_info("warning", exectime)+"|"+display_graph(exectime, args, 0))
 		sys.exit(1)
 	else:
