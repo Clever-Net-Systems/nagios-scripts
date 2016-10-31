@@ -18,13 +18,17 @@ python3.5 -m pip install requests
 
 ### Command
 ```
-$USER1$/check_soap --url '$ARG1$' --data '$ARG2$' --success '$ARG3$' --warning $ARG4$ --critical $ARG5$
-```
+$USER1$/check_soap --basic-auth-user='$_SERVICEBASICUSER$' --basic-auth-password='$_SERVICEBASICPASSWORD$' --url '$_SERVICEURL$' --data '$_SERVICEDATA$' --success '$_SERVICESUCCESS$' --srv-cert '$_SERVICEPATHCERTSVR$' --client-cert '$_SERVICEPATHCERTCLIENT$' --client-cert-key '$_SERVICEPATHKEY$' --warning '$_SERVICEWARNING$' --critical '$_SERVICECRITICAL$'```
 ### Arguments
 ```
-ARG1 : url of the soap service
-ARG2 : xml data to post to the soap service
-ARG3 : string to match in the service answer for a valide query
-ARG4 : exec time in [ms] for warning tresholds
-ARG5 : exec time in [ms] for critical tresholds
+MACRO (SERVICE) URL : url of the soap service
+MACRO (SERVICE) DATA : xml data to post to the soap service
+MACRO (SERVICE) SUCCESS : string to match in the service answer for a valide query
+MACRO (SERVICE) PATHCERTSVR : path for the server side certificate
+MACRO (SERVICE) PATHCERTCLIENT : path for the client side certificate
+MACRO (SERVICE) WARNING : exec time in [ms] for warning tresholds
+MACRO (SERVICE) CRITICAL :  exec time in [ms] for critical tresholds
+MACRO (SERVICE) BASICUSER : basic authentication username
+MACRO (SERVICE) BASICPASSWORD : basic authentication password
+MACRO (SERVICE) PATHKEY : client side certificate key file
 ```
