@@ -18,7 +18,9 @@ python3.5 -m pip install requests
 
 ### Command
 ```
-$USER1$/check_soap --basic-auth-user='$_SERVICEBASICUSER$' --basic-auth-password='$_SERVICEBASICPASSWORD$' --url '$_SERVICEURL$' --data '$_SERVICEDATA$' --success '$_SERVICESUCCESS$' --srv-cert '$_SERVICEPATHCERTSVR$' --client-cert '$_SERVICEPATHCERTCLIENT$' --client-cert-key '$_SERVICEPATHKEY$' --warning '$_SERVICEWARNING$' --critical '$_SERVICECRITICAL$'```
+$USER1$/check_soap --basic-auth-user='$_SERVICEBASICUSER$' --basic-auth-password='$_SERVICEBASICPASSWORD$' --url '$_SERVICEURL$' --data '$_SERVICEDATA$' --success '$_SERVICESUCCESS$' --srv-cert '$_SERVICEPATHCERTSVR$' --client-cert '$_SERVICEPATHCERTCLIENT$' --client-cert-key '$_SERVICEPATHKEY$' --warning '$_SERVICEWARNING$' --critical '$_SERVICECRITICAL$'
+```
+
 ### Arguments
 ```
 MACRO (SERVICE) URL : url of the soap service
