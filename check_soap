@@ -35,8 +35,8 @@ def handle_args():
 	parser.add_argument('--client-cert-key', help='specify a local cert key for client side certificate',required=False)
 	parser.add_argument('--basic-auth-user', help='specify a basic authentication user',required=False)
 	parser.add_argument('--basic-auth-password', help='specify a basic authentication password',required=False)
-	parser.add_argument('--warning', help='exec time in [ms] for warning tresholds',required=True)
-	parser.add_argument('--critical', help='exec time in [ms] for critical tresholds',required=True)
+	parser.add_argument('--warning', help='exec time in [ms] for warning threshold',required=True)
+	parser.add_argument('--critical', help='exec time in [ms] for critical threshold',required=True)
 	args = parser.parse_args()
 	return args
 #-------------------------------------------------------------------------------
